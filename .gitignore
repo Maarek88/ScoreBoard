@@ -1,0 +1,10 @@
+/vendor/
+
+/.idea
+/.composer
+
+.phpunit
+.phpunit.cache
+/phpunit.xml
+
+/nbproject/
