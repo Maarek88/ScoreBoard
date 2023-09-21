@@ -20,11 +20,31 @@ class Game
         $this->awayScore = 0;
     }
 
-    public function updateScore(int $homeScore, int $awayScore): bool
+    public function getHomeTeam(): Team
     {
+        return $this->homeTeam;
+    }
+
+    public function getAwayTeam(): Team
+    {
+        return $this->awayTeam;
+    }
+
+    public function getHomeScore(): int
+    {
+        return $this->homeScore;
+    }
+
+    public function getAwayScore(): int
+    {
+        return $this->awayScore;
+    }
+
+    public function updateScore(int $homeScore, int $awayScore): void
+    {
+        assert($homeScore >= 0 && $awayScore >= 0);
+
         $this->homeScore = $homeScore;
         $this->awayScore = $awayScore;
-
-        return true;
     }
 }

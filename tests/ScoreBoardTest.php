@@ -12,6 +12,11 @@ use ScoreBoard\Team;
  */
 class ScoreBoardTest extends TestCase
 {
+    private function getFile(string $fileName): ?string
+    {
+        return file_get_contents(__DIR__ . '/' . $fileName);
+    }
+
     public function testTeam(): void
     {
         $team = new Team('testTeamName');
@@ -23,14 +28,27 @@ class ScoreBoardTest extends TestCase
     {
         $game = new Game(new Team('testHomeTeam'), new Team('testAwayTeam'));
 
-        $this->assertTrue(true);
+        $this->assertEquals('testHomeTeam', $game->getHomeTeam()->getName());
+        $this->assertEquals('testAwayTeam', $game->getAwayTeam()->getName());
+        $this->assertEquals(0, $game->getHomeScore());
+        $this->assertEquals(0, $game->getAwayScore());
     }
 
-    public function testBoard(): void
+    public function testGameUpdateScore(): void
     {
-        $board = new Board();
+        $game = new Game(new Team('testHomeTeam'), new Team('testAwayTeam'));
+        $game->updateScore(1, 0);
 
-        $this->assertTrue(true);
+        $this->assertEquals(1, $game->getHomeScore());
+        $this->assertEquals(0, $game->getAwayScore());
+    }
+
+    public function testGameUpdateScoreValidation(): void
+    {
+        $this->expectException(\AssertionError::class);
+
+        $game = new Game(new Team('testHomeTeam'), new Team('testAwayTeam'));
+        $game->updateScore(-1, -5);
     }
 
     public function testBoardStartGame(): void
@@ -38,7 +56,21 @@ class ScoreBoardTest extends TestCase
         $board = new Board();
         $game = $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
 
-        $this->assertInstanceOf(Game::class, $game);
+        $this->assertEquals('testHomeTeam', $game->getHomeTeam()->getName());
+        $this->assertEquals(0, $game->getHomeScore());
+        $this->assertEquals('testAwayTeam', $game->getAwayTeam()->getName());
+        $this->assertEquals(0, $game->getAwayScore());
+    }
+
+    public function testBoardStartGameAlreadyExists(): void
+    {
+        $this->expectException(\AssertionError::class);
+
+        $board = new Board();
+
+        $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
+
+        $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
     }
 
     public function testBoardUpdateScore(): void
@@ -46,10 +78,10 @@ class ScoreBoardTest extends TestCase
         $board = new Board();
 
         $game = $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
+        $board->updateScore($game, 1, 0);
 
-        $result = $board->updateScore($game, 1, 0);
-
-        $this->assertTrue($result);
+        $this->assertEquals(1, $game->getHomeScore());
+        $this->assertEquals(0, $game->getAwayScore());
     }
 
     public function testBoardFinishGame(): void
@@ -57,13 +89,25 @@ class ScoreBoardTest extends TestCase
         $board = new Board();
 
         $game = $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
+        $result1 = $this->getFile('testSummary3.txt');
+        $this->assertEquals($result1, $board->summary());
 
-        $result = $board->finishGame($game);
-
-        $this->assertTrue($result);
+        $board->finishGame($game);
+        $this->assertEquals('', $board->summary());
     }
 
-    public function testBoardSummary(): void
+    public function testBoardFinishGameNotExists(): void
+    {
+        $this->expectException(\AssertionError::class);
+
+        $board = new Board();
+        $game = $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
+
+        $board->finishGame($game);
+        $board->finishGame($game);
+    }
+
+    public function testBoardSummary1(): void
     {
         $matches = [
             ['Mexico', 'Canada', '0', '5'],
@@ -73,11 +117,35 @@ class ScoreBoardTest extends TestCase
             ['Argentina', 'Australia', '3', '1'],
         ];
 
+        $result = $this->getFile('testSummary1.txt');
+
         $board = new Board();
         foreach ($matches as $match) {
             $game = $board->startGame(new Team($match[0]), new Team($match[1]));
             $board->updateScore($game, $match[2], $match[3]);
         }
-        $this->assertEquals("1. Uruguay 6 - Italy 6\n2. Spain 10 - Brazil 2\n3. Mexico 0 - Canada 5\n4. Argentina 3 - Australia 1\n5. Germany 2 - France 2", $board->summary());
+
+        $this->assertEquals($result, $board->summary());
+    }
+
+    public function testBoardSummary2(): void
+    {
+        $matches = [
+            ['Mexico', 'Canada', '0', '5'],
+            ['Uruguay', 'Italy', '6', '6'],
+            ['Argentina', 'Australia', '3', '1'],
+            ['Spain', 'Brazil', '10', '2'],
+            ['Germany', 'France', '2', '2'],
+        ];
+
+        $result = $this->getFile('testSummary2.txt');
+
+        $board = new Board();
+        foreach ($matches as $match) {
+            $game = $board->startGame(new Team($match[0]), new Team($match[1]));
+            $board->updateScore($game, $match[2], $match[3]);
+        }
+
+        $this->assertEquals($result, $board->summary());
     }
 }
