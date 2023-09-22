@@ -12,12 +12,15 @@ class Game
 
     private int $awayScore;
 
+    private \DateTime $createdAt;
+
     public function __construct(Team $homeTeam, Team $awayTeam)
     {
         $this->homeTeam = $homeTeam;
         $this->awayTeam = $awayTeam;
         $this->homeScore = 0;
         $this->awayScore = 0;
+        $this->createdAt = new \DateTime();
     }
 
     public function getHomeTeam(): Team
@@ -38,6 +41,11 @@ class Game
     public function getAwayScore(): int
     {
         return $this->awayScore;
+    }
+
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
     }
 
     public function updateScore(int $homeScore, int $awayScore): void

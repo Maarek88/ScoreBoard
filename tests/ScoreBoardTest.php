@@ -51,6 +51,9 @@ class ScoreBoardTest extends TestCase
         $game->updateScore(-1, -5);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardStartGame(): void
     {
         $board = new Board();
@@ -62,6 +65,9 @@ class ScoreBoardTest extends TestCase
         $this->assertEquals(0, $game->getAwayScore());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardStartGameAlreadyExists(): void
     {
         $this->expectException(\AssertionError::class);
@@ -73,6 +79,9 @@ class ScoreBoardTest extends TestCase
         $board->startGame(new Team('testHomeTeam'), new Team('testAwayTeam'));
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardUpdateScore(): void
     {
         $board = new Board();
@@ -84,6 +93,9 @@ class ScoreBoardTest extends TestCase
         $this->assertEquals(0, $game->getAwayScore());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardFinishGame(): void
     {
         $board = new Board();
@@ -96,6 +108,9 @@ class ScoreBoardTest extends TestCase
         $this->assertEquals('', $board->summary());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardFinishGameNotExists(): void
     {
         $this->expectException(\AssertionError::class);
@@ -107,6 +122,9 @@ class ScoreBoardTest extends TestCase
         $board->finishGame($game);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardSummary1(): void
     {
         $matches = [
@@ -128,6 +146,9 @@ class ScoreBoardTest extends TestCase
         $this->assertEquals($result, $board->summary());
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testBoardSummary2(): void
     {
         $matches = [

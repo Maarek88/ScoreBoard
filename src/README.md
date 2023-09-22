@@ -1,0 +1,1 @@
+- Regarding the start game functionality, I was wondering if should I return an error or display the game if the game already existed.
